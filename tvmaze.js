@@ -112,12 +112,30 @@ async function getEpisodesOfShow(showId) {
     id: episodeData.id,
     name: episodeData.name,
     season: episodeData.season,
-    number: episodeData.numer
+    number: episodeData.number
   });
 }
 
-/** Write a clear docstring for this function... */
+/** Given list of episodes, create list item for each and append to DOM.
+ *
+ * An episode is {id, name, season, number} */
 
-// function displayEpisodes(episodes) { }
+function displayEpisodes(episodes) {
+  episodes.forEach(episode => {
+    $("<li>")
+      .text(`${episode.name} (season ${episode.season}, number ${episode.number})`)
+      .appendTo($episodesArea);
+  });
 
-// add other functions that will be useful / match our structure & design
+  $episodesArea.css("display", "inline-block");
+}
+
+
+/** Get episodes of specific show ID (string of numbers) and display episodes
+ *  as a list
+*/
+
+async function getEpisodesAndDisplay(showId) {
+  const episodes = await getEpisodesOfShow(showId);
+  displayEpisodes(episodes);
+}
