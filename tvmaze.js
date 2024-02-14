@@ -4,7 +4,7 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 const BASE_URL = 'https://api.tvmaze.com';
-const IMAGE_DEFAULT_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9K76Etp9e8NHN_5Nd4NQPYckxW7EdhaZn6g&usqp=CAU";
+const IMAGE_DEFAULT_URL = "https://tinyurl.com/tv-missing";
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -14,23 +14,21 @@ const IMAGE_DEFAULT_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9G
  */
 
 async function getShowsByTerm(term) {
-  // ADD: Remove placeholder & make request to TVMaze search shows API.
-  const params = new URLSearchParams ({q: term});
+  const params = new URLSearchParams({ q: term });
 
   const response = await fetch(`${BASE_URL}/search/shows?${params}`);
-  console.log("response", response);
   const showsData = await response.json();
 
   return showsData.map(showData => showData = {
     id: showData.show.id,
     name: showData.show.name,
     summary: showData.show.summary,
-    image: (showData.show.image.medium
-            ? showData.show.image.medium
-            : IMAGE_DEFAULT_URL)
-  })
+    image: (showData.show.image
+      ? showData.show.image.medium
+      : IMAGE_DEFAULT_URL)
+  });
 
-// commented out - placeholder (leaving for reference)
+  // commented out - placeholder (leaving for reference)
   // return [
   //   {
   //     id: 1767,
@@ -61,13 +59,12 @@ function displayShows(shows) {
   $showsList.empty();
 
   for (const show of shows) {
-    // TODO: may have to update image tag
     const $show = $(`
         <div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
-              alt="Bletchly Circle San Francisco"
+              src="${show.image}"
+              alt="${show.name}"
               class="w-25 me-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
@@ -97,7 +94,7 @@ async function searchShowsAndDisplay() {
   displayShows(shows);
 }
 
-$searchForm.on("submit", async function handleSearchForm (evt) {
+$searchForm.on("submit", async function handleSearchForm(evt) {
   evt.preventDefault();
   await searchShowsAndDisplay();
 });
@@ -107,7 +104,17 @@ $searchForm.on("submit", async function handleSearchForm (evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(showId) {
+  const response = await fetch(`${BASE_URL}/shows/${showId}/episodes`);
+  const episodesData = await response.json();
+
+  return episodesData.map(episodeData => episodeData = {
+    id: episodeData.id,
+    name: episodeData.name,
+    season: episodeData.season,
+    number: episodeData.numer
+  });
+}
 
 /** Write a clear docstring for this function... */
 
