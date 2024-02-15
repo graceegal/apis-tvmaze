@@ -108,6 +108,8 @@ async function getEpisodesOfShow(showId) {
   const response = await fetch(`${BASE_URL}/shows/${showId}/episodes`);
   const episodesData = await response.json();
 
+  console.log("episodes data before episodeTest ", episodesData)
+
   return episodesData.map(episodeData => episodeData = {
     id: episodeData.id,
     name: episodeData.name,
@@ -121,6 +123,7 @@ async function getEpisodesOfShow(showId) {
  * An episode is {id, name, season, number} */
 
 function displayEpisodes(episodes) {
+  $episodesArea.empty();
   episodes.forEach(episode => {
     $("<li>")
       .text(`${episode.name} (season ${episode.season}, number ${episode.number})`)
@@ -135,7 +138,11 @@ function displayEpisodes(episodes) {
  *  as a list
 */
 
-async function getEpisodesAndDisplay(showId) {
+async function getEpisodesAndDisplay(evt) {
+  const showId = $(evt.target).closest(".Show").data("show-id");
+
   const episodes = await getEpisodesOfShow(showId);
   displayEpisodes(episodes);
 }
+
+$("#showsList").on("click", ".Show-getEpisodes", getEpisodesAndDisplay);
